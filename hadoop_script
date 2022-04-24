@@ -1,0 +1,7 @@
+~/Downloads/hadoop-3.2.1/bin/hdfs namenode -format
+start-all.sh
+hdfs dfs -mkdir /user
+chmod 777 mapper.py reducer.py
+hdfs dfs -copyFromLocal /home/lkm11/Desktop/cloud-computing/cc_hadoop/vote_list.txt /user
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.2.1.jar -input /user/vote_list.txt -output /user/output -mapper /home/lkm11/Desktop/cloud-computing/cc_hadoop/mapper.py -reducer /home/lkm11/Desktop/cloud-computing/cc_hadoop/reducer.py
+hdfs dfs -cat /user/output/part-00000
