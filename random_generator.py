@@ -1,7 +1,10 @@
 import random
+import json
 
 def main():
-    candidates = ["id1","id2","id3","id4","id5"]
+    with open('encrypted_names.json', 'r') as openfile:
+        json_object = json.load(openfile)
+    candidates = json_object["names"]
     votes = []
     for i in range(1000):
         votes.append( candidates[random.randint(0,len(candidates)-1)] )

@@ -1,8 +1,3 @@
-#!/usr/bin/python3
-
-from operator import itemgetter
-import json
-
 # ------------------------------- Begin of the phe Library ------------------------------- #
 
 import fractions
@@ -825,84 +820,28 @@ class PaillierPrivateKey(object):
     
 n = 4459262300547858904658930414020825434987219645034206439443309803892354203401695292452650710089733576285085079516053137623734239796365092847130309448167252790605675345863865748471810427958631308784281532621422186125191933571399598154685591274370659718970896072116865398065589138659731186658973843782196515455322379921320592828587864328464547386279346810498157626667827913205594046034383834939455698273513557709386123596698993743863842679298718644481233825575395163958007706588797559411305883553975318221459211423461420529152990913433112849572384386804123734761363552718959437055418832197055385414943422505484239999089162219562068522109177849100249708358542458923150856429379796299256974841048572160226373252945955131632712424627098378112174714867575395358724941466765870764414110422553375792454964713950936872164015189333071767245946141940687491603580695369476126822861715535480066593358047938092090755328499707527005214935663
 
-public_key = PaillierPublicKey(n)
-
-#----------------data receiver----------------#
 p = 2035371799199481933591012944125913537544717038199894135285584303032087934092423767158010434690226923924714014047467862645305314468873957260749852237221792179720372232027896648442209422120679409207055326926507314755403716103439909241935841525642892718085985786636970867011378396675800591346793298313965152930077200879449416449263530512493234654100208923733575494460700571944886333118624114776207617005278495000571104744401657977430632580459621725493810701384810641
 
 q = 2190883406315102062831877231503263335219456522549015395315378295711972865475612430029022054841572044292181228008248544271364933039519449383891542675962892047611242265275523884201084878531939977346718100224688427714408095322674707450064503237102721124786192712922509622950729774079863672943482539138549656900909786154475902425538624479516579105128818794805293381337328637435196360605425396227593162234764283964869760442808843709989186358431493687328263216916454143
 
+
+
+public_key = PaillierPublicKey(n)
 private_key = PaillierPrivateKey(public_key, p, q)
 
-current_name = None
-current_count = 0
-name = None
+candidates = ["Krishna","Saaketh","Hrishikesh","Bheem","Jenny"]
+encrypted_names ={
+    "names" : []
+}
+count = 1
+for i in candidates:
+    encrypted_name = "id" + str(count)
+    encrypted_names["names"].append(encrypted_name)
+    encrypted_names[encrypted_name] = []
+    for j in i:
+        encrypted_names[encrypted_name].append(public_key.encrypt(ord(j)).get_ciphertext())
+    count += 1
 
-print("Evaluating the results.....")
-flag=True
-winner_name=""
-winner_count=0
-
-for line in sys.stdin:
-    line = line.strip()
-    name, ct = line.split('\t',1)
-    #print(line)
-    try:
-        name = name.strip()
-        
-        ct_val = int(ct.strip())
-        count = EncryptedNumber(public_key, ct_val)
-    except:
-        continue
-
-    if current_name == name:
-        current_count += count
-    else:
-        if current_name:
-            curr_count = private_key.decrypt(current_count)
-            if curr_count > winner_count:
-                winner_count = curr_count
-                winner_name = current_name
-            elif curr_count == winner_count:
-                winner_name = winner_name + "$" + current_name
-            if flag:
-                flag = False
-                print("Results are: ")
-            print("{}\t{}".format(current_name, str(curr_count)))
-
-        current_count = count
-        current_name = name
-
-if current_name == name:
-    curr_count = private_key.decrypt(current_count)
-    if curr_count > winner_count:
-        winner_count = curr_count
-        winner_name = current_name
-    elif curr_count == winner_count:
-        winner_name = "Tie bettween " + winner_name + "and " + current_name
-    if flag:
-        flag = False
-        print("Results are: ")
-    print("{}\t{}".format(current_name, str(curr_count)))
-
-
-with open('encrypted_names.json', 'r') as openfile:
-        json_object = json.load(openfile)
-
-print('\n')
-
-winner_name_list = winner_name.split('$')
-flag =True
-for j in winner_name_list:
-    encrypted_name = json_object[j]
-    winner_name = ""
-    for i in encrypted_name:
-        winner_name += chr(private_key.decrypt(EncryptedNumber(public_key, i)))
-    
-    if flag:
-        print("Winner is {}".format(winner_name),end=" ")
-        flag=False
-    else:
-        print("and {}".format(winner_name),end=" ")
-
-print('\n')
+import json
+with open("encrypted_names.json","w") as outfile:
+    json.dump(encrypted_names,outfile)
