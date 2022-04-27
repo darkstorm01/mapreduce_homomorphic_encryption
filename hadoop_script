@@ -1,7 +1,7 @@
 ~/Downloads/hadoop-3.2.1/bin/hdfs namenode -format
 start-all.sh
 hdfs dfs -mkdir /user
-chmod 777 mapper.py reducer.py
+chmod 777 mapper.py reducer.py encrypted_names.json
 hdfs dfs -copyFromLocal /home/lkm11/Desktop/cloud-computing/mapreduce_homomorphic_encryption/vote_list.txt /user
 hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.2.1.jar -files /home/lkm11/Desktop/cloud-computing/mapreduce_homomorphic_encryption/encrypted_names.json -input /user/vote_list.txt -output /user/output -mapper /home/lkm11/Desktop/cloud-computing/mapreduce_homomorphic_encryption/mapper.py -reducer /home/lkm11/Desktop/cloud-computing/mapreduce_homomorphic_encryption/reducer.py
 hdfs dfs -cat /user/output/part-00000
